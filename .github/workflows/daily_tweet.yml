@@ -1,0 +1,41 @@
+name: Daily Quran Tweet
+
+on:
+  schedule:
+    # سيتم تشغيل الكود يومياً الساعة 6:00 صباحاً بتوقيت UTC (يمكنك تعديل الوقت)
+    # تنسيق الوقت هو (دقيقة ساعة يوم شهر يوم-الأسبوع)
+    - cron: '0 6 * * *'
+  
+  # هذا الخيار يسمح لك بتشغيل الكود يدوياً من موقع GitHub للتجربة في أي وقت
+  workflow_dispatch:
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. جلب الكود من المستودع
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. إعداد بيئة بايثون
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-node-version: '3.10'
+
+    # 3. تثبيت المكتبات المطلوبة
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. تشغيل كود البايثون ونشر التغريدة
+    # نمرر المفاتيح السرية بأمان من إعدادات المستودع
+    - name: Run script
+      env:
+        TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+        TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+      run: python script.py
